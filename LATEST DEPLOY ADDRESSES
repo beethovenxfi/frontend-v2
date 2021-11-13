@@ -1,0 +1,30 @@
+
+Queries (HTTP):     https://api.thegraph.com/subgraphs/name/l0rdicon/subgraph-fuji-v2
+Subscriptions (WS): wss://api.thegraph.com/subgraphs/name/l0rdicon/subgraph-fuji-v2
+
+
+eployed Authorizer at 0xa9aa0081662682501CCE8eA9f5C5a937b61c9234
+need to optimize (in vault pacakge)
+
+Deployed Vault at 0x4cB07C0aD2EF69736032C97911d530a96d7Fc039
+neeed to not optimize (in the value package)
+
+Deployed ProtocolFeeCollector at 0x7D7B9A681388286A2FF05575eF746C3EFf57781E
+
+
+Deployed WeightedPoolFactory at 0x4c4407B7Ad7DF956173e479A4f70D57F7df50aC4
+Deployed WeightedPool2TokensFactory/tokenFactory??? at 0x6CA5DEfACb733E69d4cEe03f8d008F274BC3d9dd
+
+Deployed StablePoolFactory at 0x68ad353C5e8db136bFF82A980a93c4C3635582d0
+
+Deployed LiquidityBootstrappingPoolFactory at 0x79ba5546D945DD08998d639D2AB3CC522B29cbDb
+
+Deployed QueryProcessor at 0x3a7dC9140379cD9Bf5c0803a719eD8a79eB2877E
+Deployed MetaStablePoolFactory at 0x09d0737d6409B91FAebe77199C85302293699375
+
+Deployed MerkleOrchard at 0x706Fd27e1776eA8d8e4d2dA21f384cCD7C21aF6c
+
+Deployed BalancerHelpers at 0xf139df5de6d21797688c49Ee1D5769a99f83f0ca
+
+
+InvestmentPoolFactory at 0x11b0a3E73f07cbd14A0E22ef79E2FFE8B590e702

@@ -1,56 +1,63 @@
 {
-  "key": "43113",
-  "chainId": 43113,
-  "chainName": "Avalanche FUJI C-Chain",
-  "name": "Avalanche Fuji",
-  "shortName": "Fuji",
-  "network": "fuji",
-  "unknown": false,
-  "rpc": "https://api.avax-test.network/ext/bc/C/rpc",
-  "ws": "wss://api.avax-test.network/ext/bc/C/ws",
-  "loggingRpc": "https://polygon-mainnet.g.alchemy.com/v2/hsAEQ4l4c6uz3ciAdQ9w3ODWjVcND-Ti",
-  "publicRpc": "https://api.avax-test.network/ext/bc/C/rpc",
-  "explorer": "https://cchain.explorer.avax-test.network",
-  "subgraph": "https://api.studio.thegraph.com/query/7097/beethovenx/v0.0.9",
-  "farmSubgraph": "https://api.studio.thegraph.com/query/7097/masterchefv2/v0.0.10",
-  "blockSubgraph": "https://api.thegraph.com/subgraphs/name/matthewlilley/avalanche-blocks",
-  "poolsUrlV1": "",
-  "poolsUrlV2": "",
-  "nativeAsset": {
-    "name": "Fantom",
-    "address": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-    "symbol": "FTM",
-    "decimals": 18,
-    "deeplinkId": "ftm",
-    "logoURI": "https://assets.coingecko.com/coins/images/4001/large/Fantom.png"
-  },
-  "addresses": {
-    "stETH": "",
-    "wstETH": "",
-    "lidoRelayer": "",
-    "exchangeProxy": "",
-    "merkleRedeem": "",
-    "multicall": "0x53FE8639203D5dfDF735C6f8949BD340Ed6800d5",
-    "authorizer": "0xcFA12209fF8991034C2eFbbc80c6040cAf3EA2Ca",
-    "vault": "0x99DFAd1c64edBab922C0b9a490212a1fF53a04b6",
-    "weightedPoolFactory": "0x3582C64a66Ac068851E9c912eAc5c855DbE2b1E1",
-    "stablePoolFactory": "0x4928DcC463f329BdDB7159aEDE6cdc7Fb72349A3",
-    "weth": "0x2aBcDD4948b43921B06846E570e38399a0C33EF3",
-    "balancerHelpers": "0x4ccc00CA64671BFD770F3fE219abF0A0e80e271A",
-    "masterChef": "0x42BaFb14a27295A6e9Ff2c806B8F367E273BD2e4"
-  },
-  "strategies": {
-    "0": {
-      "type": "0",
-      "name": "stablePool"
+    "key": "43113",
+    "chainId": 43113,
+    "chainName": "Fuji",
+    "name": "Avalanche Testnet Fuji",
+    "shortName": "Fuji",
+    "network": "fuji",
+    "unknown": false,
+    "rpc": "https://api.avax-test.network/ext/bc/C/rpc",
+    "ws": "wss://api.avax-test.network/ext/bc/C/rpc",
+    "loggingRpc": "https://api.avax-test.network/ext/bc/C/rpc",
+    "explorer": "https://https://testnet.snowtrace.io/",
+    "explorerName": "Snowtrade",
+
+    "subgraph": "https://api.thegraph.com/subgraphs/name/l0rdicon/subgraph-fuji-v2",
+    "poolsUrlV1": "https://storageapi.fleek.co/balancer-bucket/balancer-exchange-kovan/pools",
+    "poolsUrlV2": "https://storageapi.fleek.co/johngrantuk-team-bucket/poolsRc02.json",
+    "supportsEIP1559": true,
+    "nativeAsset": {
+      "name": "Avax",
+      "address": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+      "symbol": "AVAX",
+      "decimals": 18,
+      "deeplinkId": "ether",
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
     },
-    "1": {
-      "type": "1",
-      "name": "weightedPool"
+    "addresses": {
+      "bFactory": "",
+      "bActions": "",
+      "dsProxyRegistry": "",
+      "merkleRedeem": "",
+      "multicall": "0x5ba1e12693dc8f9c48aad8770482f4739beed696",
+      "exchangeProxy": "0x4e67bf5bD28Dd4b570FBAFe11D0633eCbA2754Ec",
+      "merkleOrchard": "0x706Fd27e1776eA8d8e4d2dA21f384cCD7C21aF6c",
+      "authorizer": "0xa9aa0081662682501CCE8eA9f5C5a937b61c9234",
+      "vault": "0x232F63f738148B5A0eD489ee94685153A38BAc50",
+      "weightedPoolFactory": "0x4c4407B7Ad7DF956173e479A4f70D57F7df50aC4",
+      "stablePoolFactory": "0x68ad353C5e8db136bFF82A980a93c4C3635582d0",
+      "weth": "0xc778417e063141139fce010982780140aa0cd5ab",
+      "tokenFactory": "0x6CA5DEfACb733E69d4cEe03f8d008F274BC3d9dd",
+      "lidoRelayer": "",
+      "balancerHelpers": "0xf139df5de6d21797688c49Ee1D5769a99f83f0ca"
     },
-    "2": {
-      "type": "2",
-      "name": "weightedPool"
-    }
-  }
+    "keys": {
+      "infura": "",
+      "alchemy": ""
+    },
+    "strategies": {
+      "0": {
+        "type": "0",
+        "name": "stablePool"
+      },
+      "1": {
+        "type": "1",
+        "name": "weightedPool"
+      },
+      "2": {
+        "type": "2",
+        "name": "weightedPool"
+      }
+    },
+    "supportsElementPools": false
 }
