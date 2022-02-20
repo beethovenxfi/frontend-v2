@@ -37,6 +37,7 @@ export default defineComponent({
     onShow: { type: Function },
     onHide: { type: Function },
     noPad: { type: Boolean, default: false },
+    rightPad: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
     iconSize: { type: String, defailt: 'md' },
     width: { type: String, default: '52' },
@@ -49,6 +50,7 @@ export default defineComponent({
 
     const tooltipClasses = computed(() => {
       return {
+        'pr-3': props.rightPad,
         'p-3': !props.noPad,
         [`w-${props.width}`]: true,
         'text-center': props.textCenter
