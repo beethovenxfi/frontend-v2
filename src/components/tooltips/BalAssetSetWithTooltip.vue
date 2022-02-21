@@ -3,7 +3,7 @@
     v-for="(addressesChunk, addressChunkIndex) in addressesChunks"
     :key="addressChunkIndex"
   >
-    <BalTooltip width="auto" noPad rightPad placement="left">
+    <BalTooltip width="auto" noPad rightPad placement="right">
       <template v-slot:activator>
         <div
           class="addresses-row"
