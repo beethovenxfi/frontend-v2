@@ -41,7 +41,8 @@ export default defineComponent({
     disabled: { type: Boolean, default: false },
     iconSize: { type: String, defailt: 'md' },
     width: { type: String, default: '52' },
-    textCenter: { type: Boolean, default: false }
+    textCenter: { type: Boolean, default: false },
+    distance: { type: Number, default: 5 }
   },
   setup(props) {
     const activator = ref<HTMLElement>();
@@ -78,7 +79,12 @@ export default defineComponent({
       if (activator.value && content.value) {
         popper.value = createPopper(activator.value, content.value, {
           placement: props.placement,
-          modifiers: [{ name: 'offset', options: { offset: [0, 5] } }]
+          modifiers: [
+            {
+              name: 'offset',
+              options: { offset: [0, props.distance] }
+            }
+          ]
         });
       }
     });
