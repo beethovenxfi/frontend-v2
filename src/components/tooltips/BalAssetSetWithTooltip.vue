@@ -35,7 +35,9 @@
         <div class="p-3">
           <div v-for="(item, idx) in pool.tokens" :key="idx">
             <div class="whitespace-nowrap flex items-center mb-1">
-              {{ fNum(item.weight, 'percent') }}
+              <template v-if="!!item.weight">
+                {{ fNum(item.weight, 'percent') }}</template
+              >
               <span class="ml-1 text-gray-500 text-xs">
                 <BalAsset :address="item.address" :size="16" />
                 {{ item.symbol }}
