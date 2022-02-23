@@ -33,7 +33,7 @@
       </template>
       <div class="text-sm divide-y dark:divide-gray-900">
         <div class="p-3">
-          <div v-for="(item, idx) in pool.tokens" :key="idx">
+          <div v-for="(item, idx) in tokens" :key="idx">
             <div class="whitespace-nowrap flex items-center mb-1">
               <template v-if="!!item.weight">
                 {{ fNum(item.weight, 'percent') }}</template
@@ -103,6 +103,10 @@ export default defineComponent({
         (radius.value * 2)
     );
 
+    const tokens = computed(() =>
+      props.pool?.tokens.filter(token => token.address !== props.pool?.address)
+    );
+
     /**
      * COMPOSABLES
      */
@@ -123,6 +127,7 @@ export default defineComponent({
     return {
       // computed
       addressesChunks,
+      tokens,
 
       // methods
       leftOffsetFor,
