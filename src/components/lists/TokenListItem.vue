@@ -9,13 +9,27 @@
       :size="34"
       class="mr-3"
     />
-    <div class="flex-auto">
+    <div class="shrink">
       {{ token.symbol }}
-      <div class="text-gray text-sm w-40 md:w-60 truncate">
+      <div class="text-gray text-sm w-20 md:w-40 truncate">
         {{ token.name }}
       </div>
     </div>
-    <span class="flex flex-col items-end text-right font-medium">
+    <BalTooltip
+      v-if="isWalletReady"
+      placement="right"
+      :width="32"
+      @click="addTokenToWallet(token)"
+    >
+      <template v-slot:activator>
+        <BalIcon name="plus-circle" size="md" class="ml-1" />
+      </template>
+      <div class="text-sm bg-gray-50 dark:bg-gray-800 rounded-t">
+        Add token to wallet!
+      </div>
+    </BalTooltip>
+
+    <span class="flex flex-col items-end text-right font-medium ml-auto">
       <BalLoadingNumber v-if="balanceLoading" type="token" />
       <template v-else>
         <template v-if="balance > 0">
@@ -53,6 +67,7 @@ import { onMounted, onUnmounted, PropType, ref, computed } from 'vue';
 import { TokenInfo } from '@/types/TokenList';
 import useTokens from '@/composables/useTokens';
 import useUserSettings from '@/composables/useUserSettings';
+import useWeb3 from '@/services/web3/useWeb3';
 
 export default {
   name: 'TokenListItem',
@@ -70,6 +85,7 @@ export default {
     const animateRef = ref();
     const { balances, prices } = useTokens();
     const { currency } = useUserSettings();
+    const { isWalletReady, addTokenToWallet } = useWeb3();
 
     /**
      * COMPUTED
@@ -104,7 +120,9 @@ export default {
       fNum,
       animateRef,
       balance,
-      value
+      value,
+      isWalletReady,
+      addTokenToWallet
     };
   }
 };
