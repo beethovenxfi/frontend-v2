@@ -3,6 +3,8 @@ import configs from '@/lib/config';
 import { callStatic, sendTransaction } from '@/lib/utils/balancer/web3';
 import { default as weightedPoolFactoryAbi } from '@/beethovenx/abi/WeightedPoolFactory.json';
 import { default as weightedPoolAbi } from '@/beethovenx/abi/WeightedPool.json';
+import { default as weightedPool2TokensFactoryAbi } from '@/beethovenx/abi/WeightedPool2TokensFactory.json';
+import { default as weightedPool2TokensAbi } from '@/beethovenx/abi/WeightedPool2Tokens.json';
 import { default as vaultAbi } from '@/beethovenx/abi/Vault.json';
 import {
   JsonRpcProvider,
@@ -25,8 +27,9 @@ export interface PoolTokenInput {
 
 export class PoolCreatorService {
   network: string;
-  vaultAddress: string;
   weightedPoolFactoryAddress: string;
+  weightedPool2TokensFactoryAddress: string;
+  vaultAddress: string;
   helpersAddress: string;
   poolVerifier: PoolVerifierService;
 
@@ -35,6 +38,8 @@ export class PoolCreatorService {
     this.vaultAddress = configs[network].addresses.vault;
     this.weightedPoolFactoryAddress =
       configs[network].addresses.weightedPoolFactory;
+    this.weightedPool2TokensFactoryAddress =
+      configs[network].addresses.weightedPool2TokensFactory;
     this.helpersAddress = configs[network].addresses.balancerHelpers;
     this.poolVerifier = new PoolVerifierService(network);
   }
@@ -51,8 +56,12 @@ export class PoolCreatorService {
 
     return await sendTransaction(
       provider,
-      this.weightedPoolFactoryAddress,
-      weightedPoolFactoryAbi,
+      tokens.length === 2
+        ? this.weightedPool2TokensFactoryAddress
+        : this.weightedPoolFactoryAddress,
+      tokens.length === 2
+        ? weightedPool2TokensFactoryAbi
+        : weightedPoolFactoryAbi,
       'create',
       [
         name,
@@ -98,7 +107,8 @@ export class PoolCreatorService {
 
   public async getPoolDataFromTransaction(
     provider: Web3Provider | JsonRpcProvider,
-    receipt: any
+    receipt: any,
+    tokens: PoolTokenInput[]
   ): Promise<{ poolAddress: string; blockHash: string; poolId: string }> {
     const poolCreatedEvent = receipt.events.find(
       (e: { event: string }) => e.event === 'PoolCreated'
@@ -112,7 +122,7 @@ export class PoolCreatorService {
         poolId = await callStatic(
           provider,
           poolCreatedEvent.args.pool,
-          weightedPoolAbi,
+          tokens.length == 2 ? weightedPool2TokensAbi : weightedPoolAbi,
           'getPoolId',
           []
         );

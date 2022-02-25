@@ -214,7 +214,8 @@ export default defineComponent({
           onTxConfirmed: async (receipt: TransactionReceipt) => {
             const data = await poolCreatorService.value.getPoolDataFromTransaction(
               getProvider(),
-              receipt
+              receipt,
+              poolTokens
             );
             poolAddress.value = data.poolAddress;
             blockHash.value = data.blockHash;
