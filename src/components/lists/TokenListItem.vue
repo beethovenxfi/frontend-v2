@@ -9,25 +9,25 @@
       :size="34"
       class="mr-3"
     />
-    <div class="shrink">
+    <div class="flex-auto">
       {{ token.symbol }}
+      <BalTooltip
+        v-if="isWalletReady"
+        placement="right"
+        :width="32"
+        @click="addTokenToWallet(token)"
+      >
+        <template v-slot:activator>
+          <BalIcon name="plus-circle" size="xs" class="ml-1" />
+        </template>
+        <div class="text-sm bg-gray-50 dark:bg-gray-800 rounded-t">
+          Add token to wallet!
+        </div>
+      </BalTooltip>
       <div class="text-gray text-sm w-20 md:w-40 truncate">
         {{ token.name }}
       </div>
     </div>
-    <BalTooltip
-      v-if="isWalletReady"
-      placement="right"
-      :width="32"
-      @click="addTokenToWallet(token)"
-    >
-      <template v-slot:activator>
-        <BalIcon name="plus-circle" size="md" class="ml-1" />
-      </template>
-      <div class="text-sm bg-gray-50 dark:bg-gray-800 rounded-t">
-        Add token to wallet!
-      </div>
-    </BalTooltip>
 
     <span class="flex flex-col items-end text-right font-medium ml-auto">
       <BalLoadingNumber v-if="balanceLoading" type="token" />
