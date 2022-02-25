@@ -106,7 +106,7 @@ export default function useWeb3() {
     })
   );
 
-  async function addTokenToWallet(token: any) {
+  const addTokenToWallet = async (token: any) => {
     const provider = window.ethereum as any;
     try {
       // wasAdded is a boolean. Like any RPC method, an error may be thrown.
@@ -125,13 +125,11 @@ export default function useWeb3() {
 
       if (wasAdded) {
         console.log('Thanks for your interest!');
-      } else {
-        console.log('Your loss!');
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   // WATCHERS
   watch(account, () => {
