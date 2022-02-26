@@ -50,7 +50,8 @@ export class PoolCreatorService {
     symbol: string,
     owner: string,
     swapFeePercentage: string,
-    tokens: PoolTokenInput[]
+    tokens: PoolTokenInput[],
+    isWeightedPool2Tokens: boolean
   ): Promise<TransactionResponse> {
     const sorted = this.sortTokens(tokens);
 
@@ -64,24 +65,27 @@ export class PoolCreatorService {
       owner
     ];
 
-    /**
-     * for 2 token pools the weightedPool2TokensFactory is used
-     * and this requires an extra parameter at index 5
-     * 'bool oracleEnabled'
-     * which is hardcoded to 'false' for now
-     * **/
-    if (tokens.length === 2) {
+    let factoryAddress: string, factoryAbi: any[];
+    if (isWeightedPool2Tokens) {
+      /**
+       * for 2 token pools the weightedPool2TokensFactory is used
+       * and this requires an extra parameter at index 5
+       * 'bool oracleEnabled'
+       * which is hardcoded to 'false' for now
+       * **/
       paramsArray.splice(5, 0, false);
+
+      factoryAddress = this.weightedPool2TokensFactoryAddress;
+      factoryAbi = weightedPool2TokensFactoryAbi;
+    } else {
+      factoryAddress = this.weightedPoolFactoryAddress;
+      factoryAbi = weightedPoolFactoryAbi;
     }
 
     return await sendTransaction(
       provider,
-      tokens.length === 2
-        ? this.weightedPool2TokensFactoryAddress
-        : this.weightedPoolFactoryAddress,
-      tokens.length === 2
-        ? weightedPool2TokensFactoryAbi
-        : weightedPoolFactoryAbi,
+      factoryAddress,
+      factoryAbi,
       'create',
       paramsArray
     );
@@ -118,7 +122,7 @@ export class PoolCreatorService {
   public async getPoolDataFromTransaction(
     provider: Web3Provider | JsonRpcProvider,
     receipt: any,
-    tokens: PoolTokenInput[]
+    isWeightedPool2Tokens: boolean
   ): Promise<{ poolAddress: string; blockHash: string; poolId: string }> {
     const poolCreatedEvent = receipt.events.find(
       (e: { event: string }) => e.event === 'PoolCreated'
@@ -132,7 +136,7 @@ export class PoolCreatorService {
         poolId = await callStatic(
           provider,
           poolCreatedEvent.args.pool,
-          tokens.length == 2 ? weightedPool2TokensAbi : weightedPoolAbi,
+          isWeightedPool2Tokens ? weightedPool2TokensAbi : weightedPoolAbi,
           'getPoolId',
           []
         );

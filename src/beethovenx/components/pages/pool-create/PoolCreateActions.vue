@@ -179,6 +179,8 @@ export default defineComponent({
     const poolAddress = ref('');
     const poolId = ref('');
 
+    const isWeightedPool2Tokens = props.poolTokens.length === 2;
+
     async function createPool(): Promise<void> {
       createModalVisible.value = false;
 
@@ -199,7 +201,8 @@ export default defineComponent({
           `BPT-${poolSymbol}`,
           poolOwner,
           swapFeePercentage,
-          poolTokens
+          poolTokens,
+          isWeightedPool2Tokens
         );
 
         addTransaction({
@@ -215,7 +218,7 @@ export default defineComponent({
             const data = await poolCreatorService.value.getPoolDataFromTransaction(
               getProvider(),
               receipt,
-              poolTokens
+              isWeightedPool2Tokens
             );
             poolAddress.value = data.poolAddress;
             blockHash.value = data.blockHash;
