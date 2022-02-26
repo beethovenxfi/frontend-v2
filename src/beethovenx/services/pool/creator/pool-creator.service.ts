@@ -54,6 +54,26 @@ export class PoolCreatorService {
   ): Promise<TransactionResponse> {
     const sorted = this.sortTokens(tokens);
 
+    const paramsArray: any[] = [
+      name,
+      symbol,
+      sorted.map(token => token.address),
+      //weights and swap fee come in as 1 = 1%, so its base 16
+      bnToNormalizedWeights(sorted.map(token => parseUnits(token.weight, 16))),
+      parseUnits(swapFeePercentage, 16),
+      owner
+    ];
+
+    /**
+     * for 2 token pools the weightedPool2TokensFactory is used
+     * and this requires an extra parameter at index 5
+     * 'bool oracleEnabled'
+     * which is hardcoded to 'false' for now
+     * **/
+    if (tokens.length === 2) {
+      paramsArray.splice(5, 0, false);
+    }
+
     return await sendTransaction(
       provider,
       tokens.length === 2
@@ -63,17 +83,7 @@ export class PoolCreatorService {
         ? weightedPool2TokensFactoryAbi
         : weightedPoolFactoryAbi,
       'create',
-      [
-        name,
-        symbol,
-        sorted.map(token => token.address),
-        //weights and swap fee come in as 1 = 1%, so its base 16
-        bnToNormalizedWeights(
-          sorted.map(token => parseUnits(token.weight, 16))
-        ),
-        parseUnits(swapFeePercentage, 16),
-        owner
-      ]
+      paramsArray
     );
   }
 
