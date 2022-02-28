@@ -60,14 +60,15 @@ const swapVolume24h = computed(
         :to="{ name: 'my-portfolio' }"
         :class="['flex items-center mr-3 text-base font-medium']"
         v-if="account"
-      >
-        <BalIcon name="bar-chart-2" class="mr-2" />
-        My Portfolio:&nbsp;<span>
-          <BalLoadingBlock class="w-16 h-4" v-if="isLoadingPortfolio" />
-          <span class="text-green-500" v-else>
-            {{ fNum(portfolio.totalValue, 'usd') }}
+        ><BalBtn size="sm" color="gradient-pink-yellow" flat>
+          <BalIcon name="bar-chart-2" class="mr-2" />
+          My Portfolio:&nbsp;<span>
+            <BalLoadingBlock class="w-16 h-4" v-if="isLoadingPortfolio" />
+            <span class="text-green-200" v-else>
+              {{ fNum(portfolio.totalValue, 'usd') }}
+            </span>
           </span>
-        </span>
+        </BalBtn>
       </router-link>
     </div>
   </div>
