@@ -122,10 +122,6 @@ export default function useWeb3() {
           }
         }
       });
-
-      if (wasAdded) {
-        console.log('Thanks for your interest!');
-      }
     } catch (error) {
       console.log(error);
     }
