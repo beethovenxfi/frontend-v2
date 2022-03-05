@@ -29,38 +29,37 @@ export const EXTERNAL_LINKS = {
     NavOtherItems: [
       {
         title: 'Vote',
-        subTitle: '',
         url: 'https://snapshot.org/#/beets.eth'
       },
       {
         title: 'Analytics',
-        subTitle: '',
         url: 'https://info.beets.fi'
       },
       {
         title: 'Docs & Help',
-        subTitle: '',
-        url: 'https://docs.beethovenx.io"'
+        url: 'https://docs.beethovenx.io"',
+        icon: 'gitbook-logo'
       },
       {
         title: 'Github',
-        subTitle: '',
-        url: 'https://github.com/beethovenxfi'
+        url: 'https://github.com/beethovenxfi',
+        icon: 'github-logo'
       },
       {
         title: 'Twitter',
-        subTitle: '',
-        url: 'https://twitter.com/beethoven_x'
+        url: 'https://twitter.com/beethoven_x',
+        icon: 'twitter-icon'
       },
       {
         title: 'Medium',
-        subTitle: '',
-        url: 'https://beethovenxio.medium.com/'
+        url: 'https://beethovenxio.medium.com/',
+        icon: 'medium-icon'
       },
       {
         title: 'Discord',
         subTitle: '',
-        url: 'https://discord.gg/jedS4zGk28'
+        url: 'https://discord.gg/jedS4zGk28',
+        icon: 'discord-icon'
       },
       {
         title: 'Multichain Bridge',
