@@ -24,5 +24,54 @@ export const EXTERNAL_LINKS = {
   Copper: {
     Auctions: (poolAddress: string, networkPrefix = '') =>
       `https://${networkPrefix}copperlaunch.com/auctions/${poolAddress}`
+  },
+  Beethoven: {
+    NavOtherItems: [
+      {
+        title: 'Vote',
+        subTitle: '',
+        url: 'https://snapshot.org/#/beets.eth'
+      },
+      {
+        title: 'Analytics',
+        subTitle: '',
+        url: 'https://info.beets.fi'
+      },
+      {
+        title: 'Docs & Help',
+        subTitle: '',
+        url: 'https://docs.beethovenx.io"'
+      },
+      {
+        title: 'Github',
+        subTitle: '',
+        url: 'https://github.com/beethovenxfi'
+      },
+      {
+        title: 'Twitter',
+        subTitle: '',
+        url: 'https://twitter.com/beethoven_x'
+      },
+      {
+        title: 'Medium',
+        subTitle: '',
+        url: 'https://beethovenxio.medium.com/'
+      },
+      {
+        title: 'Discord',
+        subTitle: '',
+        url: 'https://discord.gg/jedS4zGk28'
+      },
+      {
+        title: 'Multichain Bridge',
+        subTitle: 'ETH / AVAX / BSC / MATIC',
+        url: 'https://app.multichain.org/#/router'
+      },
+      {
+        title: 'AllBridge',
+        subTitle: 'SOL / MATIC / CELO',
+        url: 'https://app.allbridge.io/bridge?from=SOL&to=FTM&asset=SOL'
+      }
+    ]
   }
 };
