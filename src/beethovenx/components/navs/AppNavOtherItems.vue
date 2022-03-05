@@ -16,6 +16,7 @@
       >
         <BalLink :href="link.url" external noStyle>
           {{ link.title }}
+          <BalIcon name="arrow-up-right" size="sm" class="text-gray-500" />
           <div v-if="link.subTitle" class="text-xs text-gray-400">
             {{ link.subTitle }}
           </div>
