@@ -169,6 +169,18 @@ export default function usePools(poolsTokenList: Ref<string[]> = ref([])) {
         );
   });
 
+  const linearPools = computed(() => {
+    return poolsTokenList.value.length > 0
+      ? poolsWithFarms.value?.filter(pool => {
+          return (
+            poolsTokenList.value.every((selectedToken: string) =>
+              pool.tokenAddresses.includes(selectedToken)
+            ) && pool.poolType === PoolType.Linear
+          );
+        })
+      : poolsWithFarms?.value.filter(pool => pool.poolType === PoolType.Linear);
+  });
+
   // METHODS
   function loadMorePools() {
     poolsQuery.fetchNextPage.value();
@@ -184,6 +196,7 @@ export default function usePools(poolsTokenList: Ref<string[]> = ref([])) {
     bptAddresses,
     communityPools,
     beethovenPools,
+    linearPools,
     tokens,
     userPools,
     totalInvestedAmount,

@@ -98,6 +98,8 @@ export interface Pool {
   isNewPool?: boolean;
   volume24h: string;
   fees24h: string;
+  upperTarget: string;
+  lowerTarget: string;
 }
 
 export interface LinearPool extends Pool {
