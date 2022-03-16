@@ -27,6 +27,8 @@
             shadow="lg"
             :no-pad="noPad"
             :no-content-pad="noContentPad"
+            :h-custom-content="hCustomContent"
+            :overflow-auto-content="overflowAutoContent"
             class="modal-card"
             noBorder
           >
@@ -62,7 +64,9 @@ export default defineComponent({
     title: { type: String, default: '' },
     noPad: { type: Boolean, default: false },
     noContentPad: { type: Boolean, default: false },
-    fireworks: { type: Boolean, default: false }
+    fireworks: { type: Boolean, default: false },
+    hCustomContent: { type: Boolean, default: false },
+    overflowAutoContent: { type: Boolean, default: false }
   },
 
   setup(props) {
