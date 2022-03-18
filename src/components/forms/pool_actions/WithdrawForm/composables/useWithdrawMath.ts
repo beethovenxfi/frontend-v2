@@ -143,7 +143,7 @@ export default function useWithdrawMath(
    * COMPUTED
    */
   const tokenAddresses = computed((): string[] => {
-    if (isStablePhantom(pool.value.poolType)) {
+    if (isStablePhantom(pool.value.poolType) && pool.value.mainTokens) {
       return pool.value.mainTokens || [];
     }
     return pool.value.tokenAddresses;
@@ -724,12 +724,12 @@ export default function useWithdrawMath(
         formatUnits(expectedAmountsOut[idx] || '0', 18)
       );
 
-      if (
+      /*if (
         linearPool &&
         parseFloat(linearPool.mainToken.balance) < expectedAmountOut
       ) {
         return linearPool.wrappedToken.address;
-      }
+      }*/
 
       return token;
     });
@@ -774,12 +774,12 @@ export default function useWithdrawMath(
             formatUnits(expectedAmountsOut[idx] || '0', 18)
           );
 
-          if (
+          /*if (
             linearPool &&
             parseFloat(linearPool.mainToken.balance) < expectedAmountOut
           ) {
             return linearPool.wrappedToken.address;
-          }
+          }*/
         }
 
         return batchSwapToken;
@@ -822,6 +822,8 @@ export default function useWithdrawMath(
     }
 
     const tokensOut = getExitPoolBatchSwapTokensOut(expectedAmountsOut);
+
+    console.log('tokens out', tokensOut);
 
     try {
       const response = await balancer.relayer.exitPoolAndBatchSwap({
@@ -891,8 +893,7 @@ export default function useWithdrawMath(
       );
 
       batchSwapSingleAssetMaxes.value[tokenOutIndex.value] = amountOut;
-    } else {
-      console.log('batchRelayerTokenOut.value', batchRelayerTokenOut.value);
+    } else if (pool.value.linearPools && pool.value.linearPools.length > 0) {
       const _batchRelayerSwap = await getBatchRelayerSwap(
         [bptBalanceScaled.value.toString()],
         [batchRelayerTokenOut.value]
