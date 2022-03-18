@@ -79,5 +79,3 @@ export const EXTERNAL_LINKS = {
     ]
   }
 };
-
-//icon: 'gitbook-logo'
