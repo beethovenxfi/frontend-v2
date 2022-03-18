@@ -45,10 +45,7 @@ import { computed, defineComponent, PropType, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
-import {
-  DecoratedPoolWithShares,
-  PoolToken
-} from '@/services/balancer/subgraph/types';
+import { LinearPool, PoolToken } from '@/services/balancer/subgraph/types';
 
 import { getAddress } from '@ethersproject/address';
 
@@ -115,7 +112,7 @@ export default defineComponent({
     });
 
     // DATA
-    const columns = ref<ColumnDefinition<DecoratedPoolWithShares>[]>([
+    const columns = ref<ColumnDefinition<LinearPool>[]>([
       {
         name: 'Pool',
         accessor: pool => pool.name,
@@ -125,8 +122,9 @@ export default defineComponent({
       },
       {
         name: 'Main Token',
-        accessor: pool => fNum(linearPool(pool).mainToken.balance, 'token_lg'),
-        sortKey: pool => bnum(linearPool(pool).mainToken.balance).toNumber(),
+        accessor: pool =>
+          fNum(getMainTokenBalance(pool).toString(), 'token_lg'),
+        sortKey: pool => bnum(getMainTokenBalance(pool)).toNumber(),
         align: 'right',
         id: 'mainTokenBalance',
         width: 150,
@@ -135,8 +133,8 @@ export default defineComponent({
       {
         name: 'Wrapped Token',
         accessor: pool =>
-          fNum(linearPool(pool).wrappedToken.balance, 'token_lg'),
-        sortKey: pool => bnum(linearPool(pool).wrappedToken.balance).toNumber(),
+          fNum(getWrappedTokenBalance(pool).toString(), 'token_lg'),
+        sortKey: pool => bnum(getWrappedTokenBalance(pool)).toNumber(),
         align: 'right',
         id: 'wrappedTokenBalance',
         width: 150,
@@ -210,59 +208,36 @@ export default defineComponent({
     });
 
     // METHODS
-    function linearPool(pool: DecoratedPoolWithShares) {
-      if (pool.linearPools && pool.linearPools.length > 0) {
-        return pool.linearPools[0];
-      }
-      return {
-        id: 0,
-        symbol: '',
-        address: '',
-        priceRate: '',
-        unwrappedTokenAddress: '',
-        totalSupply: '',
-        balance: '',
-        mainToken: {
-          address: '',
-          index: 0,
-          balance: '',
-          name: '',
-          symbol: '',
-          decimals: 0
-        },
-        wrappedToken: {
-          address: '',
-          index: 0,
-          balance: '',
-          priceRate: '',
-          name: '',
-          symbol: '',
-          decimals: 0
-        },
-        poolToken: ''
-      };
+    function calculatePoolValue(pool: LinearPool) {
+      const linearPool = pool.linearPools?.find(
+        lp => lp.address === pool.address.toLowerCase()
+      );
+      return linearPool
+        ? bnum(linearPool.totalSupply).times(linearPool.priceRate)
+        : bnum(0);
     }
-    function calculatePoolValue(pool: DecoratedPoolWithShares) {
-      return bnum(linearPool(pool).totalSupply).times(
-        linearPool(pool).priceRate
+
+    function getMainTokenBalance(pool: LinearPool) {
+      return bnum(pool.tokens[pool.mainIndex].balance);
+    }
+
+    function getWrappedTokenBalance(pool: LinearPool) {
+      return bnum(pool.tokens[pool.wrappedIndex].balance).multipliedBy(
+        pool.tokens[pool.wrappedIndex].priceRate || 0
       );
     }
 
-    function calculateBoostPercent(pool: DecoratedPoolWithShares) {
-      const wrappedBalance = bnum(
-        linearPool(pool).wrappedToken.balance
-      ).multipliedBy(linearPool(pool).wrappedToken.priceRate);
-
-      const percentBoosted = wrappedBalance.dividedBy(
-        bnum(linearPool(pool).mainToken.balance).plus(wrappedBalance)
+    function calculateBoostPercent(pool: LinearPool) {
+      const percentBoosted = getWrappedTokenBalance(pool).dividedBy(
+        getMainTokenBalance(pool).plus(getWrappedTokenBalance(pool))
       );
       return percentBoosted;
     }
 
-    function calculatePoolVariance(pool: DecoratedPoolWithShares) {
+    function calculatePoolVariance(pool: LinearPool) {
       const lowerTarget = bnum(pool.lowerTarget);
       const upperTarget = bnum(pool.upperTarget);
-      const mainTokenBalance = bnum(linearPool(pool).mainToken.balance);
+      const mainTokenBalance = getMainTokenBalance(pool);
 
       let belowAboveValue = bnum(0);
       if (mainTokenBalance.comparedTo(lowerTarget) === -1) {
@@ -275,12 +250,12 @@ export default defineComponent({
       return belowAboveValue;
     }
 
-    function orderedTokenAddressesFor(pool: DecoratedPoolWithShares) {
+    function orderedTokenAddressesFor(pool: LinearPool) {
       const sortedTokens = orderedPoolTokens(pool);
       return sortedTokens.map(token => getAddress(token.address));
     }
 
-    function orderedPoolTokens(pool: DecoratedPoolWithShares): PoolToken[] {
+    function orderedPoolTokens(pool: LinearPool): PoolToken[] {
       if (isStablePhantom(pool.poolType))
         return pool.tokens.filter(token => token.address !== pool.address);
       if (isStableLike(pool.poolType)) return pool.tokens;
@@ -290,7 +265,7 @@ export default defineComponent({
       return sortedTokens;
     }
 
-    function handleRowClick(pool: DecoratedPoolWithShares) {
+    function handleRowClick(pool: LinearPool) {
       trackGoal(Goals.ClickPoolsTableRow);
 
       router.push({ name: 'pool', params: { id: pool.id } });

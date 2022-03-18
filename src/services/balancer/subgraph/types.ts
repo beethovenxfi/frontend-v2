@@ -109,14 +109,14 @@ export interface Pool {
   isNewPool?: boolean;
   volume24h: string;
   fees24h: string;
-  upperTarget: string;
-  lowerTarget: string;
 }
 
 export interface LinearPool extends Pool {
   mainIndex: number;
   wrappedIndex: number;
   swapEnabled: boolean;
+  lowerTarget: string;
+  upperTarget: string;
 }
 
 export type DecoratedPool = Pool;

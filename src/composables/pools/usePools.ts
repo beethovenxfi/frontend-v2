@@ -10,7 +10,8 @@ import useAverageBlockTime from '@/beethovenx/composables/blocks/useAverageBlock
 import useProtocolDataQuery from '@/beethovenx/composables/queries/useProtocolDataQuery';
 import {
   DecoratedPoolWithShares,
-  PoolType
+  PoolType,
+  LinearPool
 } from '@/services/balancer/subgraph/types';
 import useWeb3 from '@/services/web3/useWeb3';
 import {
@@ -48,7 +49,6 @@ export default function usePools(poolsTokenList: Ref<string[]> = ref([])) {
     const flattened = flatten(
       poolsQuery.data.value.pages.map(page => page.pools)
     );
-
     return flattened;
   });
 
@@ -172,15 +172,11 @@ export default function usePools(poolsTokenList: Ref<string[]> = ref([])) {
   });
 
   const linearPools = computed(() => {
-    return poolsTokenList.value.length > 0
-      ? poolsWithFarms.value?.filter(pool => {
-          return (
-            poolsTokenList.value.every((selectedToken: string) =>
-              pool.tokenAddresses.includes(selectedToken)
-            ) && pool.poolType === PoolType.Linear
-          );
-        })
-      : poolsWithFarms?.value.filter(pool => pool.poolType === PoolType.Linear);
+    return pools.value.filter(pool => {
+      if (pool.poolType === PoolType.Linear) {
+        return pool as LinearPool;
+      }
+    });
   });
 
   // METHODS
