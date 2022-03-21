@@ -20,11 +20,39 @@
       :sort-externally="true"
       @load-more="handleLoadMore"
       @handle-sort="handleSort"
-      :initial-state="{}"
+      :initial-state="{
+        sortColumn: 'poolValue',
+        sortDirection: 'desc'
+      }"
     >
+      <template v-slot:iconColumnHeader>
+        <div class="flex items-center">
+          <img
+            v-if="darkMode"
+            :src="require('@/assets/images/icons/tokens_white.svg')"
+          />
+          <img
+            v-else
+            :src="require('@/assets/images/icons/tokens_black.svg')"
+          />
+        </div>
+      </template>
+      <template v-slot:iconColumnCell="pool">
+        <div v-if="!isLoading" class="px-6 py-4">
+          <BalAssetSetWithTooltip
+            :addresses="orderedTokenAddressesFor(pool)"
+            :width="100"
+            :pool="pool"
+          />
+        </div>
+      </template>
       <template v-slot:variance="pool">
         <div
-          :class="{ 'text-red-500': !calculatePoolVariance(pool).isEqualTo(0) }"
+          :class="
+            calculatePoolVariance(pool).isEqualTo(0)
+              ? 'text-green-500'
+              : 'text-red-500'
+          "
           class="px-6 py-4 -mt-1 flex justify-end font-numeric "
         >
           {{
@@ -52,6 +80,8 @@ import { getAddress } from '@ethersproject/address';
 import useNumbers from '@/composables/useNumbers';
 import useFathom from '@/composables/useFathom';
 
+import BalAssetSetWithTooltip from '@/components/tooltips/BalAssetSetWithTooltip.vue';
+
 import {
   BalTableColumnSortData,
   ColumnDefinition
@@ -65,7 +95,7 @@ import { sortBy } from 'lodash';
 const POOLS_PER_PAGE = 10;
 
 export default defineComponent({
-  components: {},
+  components: { BalAssetSetWithTooltip },
 
   emits: ['loadMore'],
 
@@ -99,7 +129,7 @@ export default defineComponent({
 
   setup(props) {
     // COMPOSABLES
-    const { fNum, toFiat } = useNumbers();
+    const { fNum } = useNumbers();
     const router = useRouter();
     const { t } = useI18n();
     const { trackGoal, Goals } = useFathom();
@@ -107,18 +137,39 @@ export default defineComponent({
     const { upToLargeBreakpoint } = useBreakpoints();
     const numPoolsVisible = ref(POOLS_PER_PAGE);
     const sortData = ref<BalTableColumnSortData>({
-      column: 'variance',
-      direction: 'asc'
+      column: 'poolValue',
+      direction: 'desc'
     });
 
     // DATA
     const columns = ref<ColumnDefinition<LinearPool>[]>([
+      {
+        name: 'Icons',
+        id: 'icons',
+        accessor: 'uri',
+        Header: 'iconColumnHeader',
+        Cell: 'iconColumnCell',
+        width: 125,
+        noGrow: true
+      },
       {
         name: 'Pool',
         accessor: pool => pool.name,
         id: 'poolName',
         width: 300,
         cellClassName: 'font-numeric'
+      },
+      {
+        name: 'Variance',
+        accessor: 'variance',
+        sortKey: pool =>
+          calculatePoolVariance(pool)
+            .abs()
+            .toNumber(),
+        align: 'right',
+        id: 'variance',
+        Cell: 'variance',
+        width: 120
       },
       {
         name: 'Main Token',
@@ -149,18 +200,6 @@ export default defineComponent({
         id: 'percentBoost',
         width: 100,
         cellClassName: 'font-numeric'
-      },
-      {
-        name: 'Variance',
-        accessor: 'variance',
-        sortKey: pool =>
-          calculatePoolVariance(pool)
-            .abs()
-            .toNumber(),
-        align: 'right',
-        id: 'variance',
-        Cell: 'variance',
-        width: 120
       },
       {
         name: 'Lower Target',
@@ -261,7 +300,9 @@ export default defineComponent({
       if (isStableLike(pool.poolType)) return pool.tokens;
 
       const sortedTokens = pool.tokens.slice();
-      sortedTokens.sort((a, b) => parseFloat(b.weight) - parseFloat(a.weight));
+      sortedTokens.sort(
+        (a, b) => parseFloat(b.balance) - parseFloat(a.balance)
+      );
       return sortedTokens;
     }
 
