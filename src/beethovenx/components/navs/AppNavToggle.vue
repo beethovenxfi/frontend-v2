@@ -2,27 +2,27 @@
   <div :class="`app-nav-toggle`">
     <router-link
       :to="{ name: 'trade' }"
-      :class="['toggle-link px-6', { [activeClasses]: isTradePage }]"
+      :class="['toggle-link px-3', { [activeClasses]: isTradePage }]"
       @click="trackGoal(Goals.ClickNavTrade)"
     >
       Swap
     </router-link>
     <router-link
       :to="{ name: 'pools' }"
-      :class="['toggle-link px-6', { [activeClasses]: isInvestPage }]"
+      :class="['toggle-link px-3', { [activeClasses]: isInvestPage }]"
       @click="trackGoal(Goals.ClickNavInvest)"
     >
       Invest /&nbsp;Farm
     </router-link>
     <router-link
       :to="{ name: 'stake' }"
-      :class="['toggle-link px-4', { [activeClasses]: isStakePage }]"
+      :class="['toggle-link px-3', { [activeClasses]: isStakePage }]"
     >
       Stake
     </router-link>
     <router-link
       :to="{ name: 'launch' }"
-      :class="['toggle-link px-4', { [activeClasses]: isLaunchPage }]"
+      :class="['toggle-link px-3', { [activeClasses]: isLaunchPage }]"
     >
       Launch
     </router-link>
@@ -94,6 +94,6 @@ export default defineComponent({
 }
 
 .toggle-link {
-  @apply h-full flex items-center;
+  @apply h-full flex items-center text-center;
 }
 </style>

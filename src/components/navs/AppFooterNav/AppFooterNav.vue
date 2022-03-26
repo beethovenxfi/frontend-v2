@@ -4,8 +4,9 @@
       <!--      <div class="w-1/3 pl-2">
         <DarkModeToggle circle />
       </div>-->
-      <div class="w-full flex justify-center">
+      <div class="w-full flex justify-center items-center">
         <AppNavToggle darkModeBg="700" />
+        <AppNavOtherItems verticalAlign="bottom" align="right" />
       </div>
       <!--      <div class="w-1/3 flex justify-end pr-2">
         <IntercomToggle circle />
@@ -17,12 +18,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import AppNavToggle from '@/beethovenx/components/navs/AppNavToggle.vue';
+import AppNavOtherItems from '@/beethovenx/components/navs/AppNavOtherItems.vue';
 
 export default defineComponent({
   name: 'AppFooterNav',
 
   components: {
-    AppNavToggle
+    AppNavToggle,
+    AppNavOtherItems
   }
 });
 </script>
