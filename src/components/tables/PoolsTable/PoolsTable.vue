@@ -193,8 +193,7 @@ export default defineComponent({
         align: 'right',
         id: 'myBalance',
         hidden: !props.showPoolShares,
-        sortKey: pool =>
-          Number(pool.shares || 0) + (pool.decoratedFarm?.stake || 0),
+        sortKey: pool => Number(pool.userBalance || 0),
         width: 150
       },
       {
