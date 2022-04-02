@@ -3,7 +3,9 @@
     class="toggle-btn w-9 h-9 flex justify-center items-center cursor-pointer rounded-full bg-gray-50 dark:bg-gray-900 shadow group"
     @click="toggle"
   >
+    <BalLoadingIcon v-if="loading" />
     <div
+      v-else
       class="ease-in-out duration-300"
       :class="{ 'transform rotate-180': isRotated }"
     >
@@ -27,8 +29,16 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import BalLoadingIcon from '@/components/_global/BalLoadingIcon/BalLoadingIcon.vue';
 
 export default defineComponent({
+  components: { BalLoadingIcon },
+  props: {
+    loading: {
+      type: Boolean,
+      required: true
+    }
+  },
   emits: ['toggle'],
   setup(_props, { emit }) {
     const isRotated = ref(false);

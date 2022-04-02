@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import AppNav from '@/components/navs/AppNav/AppNav.vue';
-import AppHero from '@/components/heros/AppHero.vue';
 import AppFooterNav from '@/components/navs/AppFooterNav/AppFooterNav.vue';
 import useBreakpoints from '@/composables/useBreakpoints';
 
@@ -15,13 +13,11 @@ const { upToLargeBreakpoint } = useBreakpoints();
 /**
  * COMPUTED
  */
-const isHomePage = computed(() => route.path === '/');
 </script>
 
 <template>
   <div>
     <AppNav />
-    <AppHero v-if="isHomePage" />
     <div class="pb-16">
       <router-view :key="$route.path" />
     </div>

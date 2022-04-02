@@ -139,11 +139,13 @@ watchEffect(() => {
       @update:amount="handleInAmountChange"
       @update:address="emit('update:tokenInAddress', $event)"
       :excludedTokens="[_tokenOutAddress, ...bptAddresses]"
-      :disabled="tradeLoading"
     />
 
     <div class="flex items-center my-2">
-      <TradePairToggle @toggle="handleTokenSwitch" />
+      <TradePairToggle
+        @toggle="handleTokenSwitch"
+        :loading="props.tradeLoading"
+      />
       <div class="h-px mx-2 bg-gray-100 dark:bg-gray-700 flex-grow" />
       <div
         v-if="rateLabel"
@@ -162,7 +164,6 @@ watchEffect(() => {
       @update:address="emit('update:tokenOutAddress', $event)"
       noRules
       noMax
-      :disabled="tradeLoading"
       :excludedTokens="[_tokenInAddress]"
     />
   </div>

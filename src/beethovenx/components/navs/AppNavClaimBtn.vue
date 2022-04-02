@@ -1,3 +1,79 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import useNumbers from '@/composables/useNumbers';
+import numeral from 'numeral';
+import useEthers from '@/composables/useEthers';
+import useBreakpoints from '@/composables/useBreakpoints';
+import useUserPoolData from '@/beethovenx/composables/useUserPoolData';
+import useUserPendingRewards from '@/beethovenx/composables/useUserPendingRewards';
+import { masterChefContractsService } from '@/beethovenx/services/farm/master-chef-contracts.service';
+import useWeb3 from '@/services/web3/useWeb3';
+import useTransactions from '@/composables/useTransactions';
+
+const { txListener } = useEthers();
+const { fNum } = useNumbers();
+const { userPoolDataLoading, userPoolData } = useUserPoolData();
+const {
+  userPendingRewardsQuery,
+  userPendingRewards,
+  userPendingRewardsLoading
+} = useUserPendingRewards();
+const { getProvider, appNetworkConfig, account } = useWeb3();
+const { addTransaction } = useTransactions();
+
+const harvesting = ref(false);
+const { upToLargeBreakpoint } = useBreakpoints();
+
+const hasFarmRewards = computed(
+  () => parseFloat(userPendingRewards.value.farm.totalBalanceUSD) > 0
+);
+
+async function harvestAllFarms(farmIds: string[]) {
+  try {
+    const provider = getProvider();
+    const tx = await masterChefContractsService.masterChef.harvestAll(
+      provider,
+      farmIds,
+      account.value
+    );
+
+    addTransaction({
+      id: tx.hash,
+      type: 'tx',
+      action: 'claim',
+      summary: 'Harvest all rewards',
+      details: {
+        spender: appNetworkConfig.addresses.masterChef
+      }
+    });
+
+    return tx;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function harvestAllRewards(): Promise<void> {
+  harvesting.value = true;
+  const tx = await harvestAllFarms(userPendingRewards.value.farm.farmIds);
+
+  if (!tx) {
+    harvesting.value = false;
+    return;
+  }
+
+  txListener(tx, {
+    onTxConfirmed: async () => {
+      await userPendingRewardsQuery.refetch.value();
+      harvesting.value = false;
+    },
+    onTxFailed: () => {
+      harvesting.value = false;
+    }
+  });
+}
+</script>
+
 <template>
   <BalPopover no-pad>
     <template v-slot:activator>
@@ -11,16 +87,18 @@
         <StarsIcon
           :class="{ 'mr-2': !upToLargeBreakpoint }"
           v-if="
-            upToLargeBreakpoint ? !(isLoadingPools && isLoadingFarms) : true
+            upToLargeBreakpoint
+              ? !(userPoolDataLoading && userPendingRewardsLoading)
+              : true
           "
         />
         <BalLoadingIcon
           size="sm"
-          v-if="harvesting || isLoadingPools || isLoadingFarms"
+          v-if="harvesting || userPoolDataLoading || userPendingRewardsLoading"
         />
-        <span class="hidden lg:block" v-else>{{
-          data.pendingRewardValue
-        }}</span>
+        <span class="hidden lg:block" v-else>
+          {{ fNum(userPendingRewards.farm.totalBalanceUSD, 'usd') }}
+        </span>
       </BalBtn>
     </template>
     <div class="w-80 sm:w-96">
@@ -31,16 +109,17 @@
         <div class="text-sm text-gray-500 font-medium mb-2 text-left">
           Pending Rewards
         </div>
-        <div class="text-xl font-medium truncate flex items-center">
-          {{ data.pendingBeets }}
-        </div>
-        <template v-for="(token, idx) in data.rewardTokens" :key="idx">
+        <template
+          v-for="(token, idx) in userPendingRewards.farm.tokens"
+          :key="idx"
+        >
           <div class="text-xl font-medium truncate flex items-center">
-            {{ numeral(token.amount).format('0,0.[0000]') }} {{ token.symbol }}
+            {{ numeral(token.balance).format('0,0.[0000]') }}
+            {{ token.symbol }}
           </div>
         </template>
         <div class="text-sm text-gray-500 font-medium mt-1 text-left">
-          {{ data.pendingRewardValue }}
+          {{ fNum(userPendingRewards.farm.totalBalanceUSD, 'usd') }}
         </div>
       </BalCard>
       <div class="grid grid-cols-2 gap-x-2 gap-y-2 px-2">
@@ -49,10 +128,15 @@
             Total Deposit
           </div>
           <div class="text-xl font-medium truncate flex items-center">
-            {{ data.totalBalance }}
+            {{ fNum(userPoolData.totalFarmBalanceUSD, 'usd') }}
           </div>
           <div class="text-sm text-gray-500 font-medium mt-1 text-left">
-            {{ data.numFarms }} {{ data.numFarms === 1 ? 'Farm' : 'Farms' }}
+            {{ userPendingRewards.farm.numFarms }}
+            {{
+              parseInt(userPendingRewards.farm.numFarms) === 1
+                ? 'Farm'
+                : 'Farms'
+            }}
           </div>
         </BalCard>
         <BalCard>
@@ -60,10 +144,11 @@
             Average APR
           </div>
           <div class="text-xl font-medium truncate flex items-center">
-            {{ data.apr }}
+            {{ fNum(userPoolData.averageFarmApr, 'percent') }}
           </div>
           <div class="text-sm text-gray-500 font-medium mt-1 text-left">
-            {{ data.dailyApr }} Daily
+            {{ fNum(parseFloat(userPoolData.averageFarmApr) / 365, 'percent') }}
+            Daily
           </div>
         </BalCard>
       </div>
@@ -82,128 +167,3 @@
     </div>
   </BalPopover>
 </template>
-
-<script lang="ts">
-import { computed, defineComponent, PropType, ref } from 'vue';
-import useNumbers from '@/composables/useNumbers';
-import { sumBy, groupBy, map } from 'lodash';
-import numeral from 'numeral';
-import usePools from '@/composables/pools/usePools';
-import useEthers from '@/composables/useEthers';
-import useWeb3 from '@/services/web3/useWeb3';
-import useBreakpoints from '@/composables/useBreakpoints';
-import { Alert } from '@/composables/useAlerts';
-
-export default defineComponent({
-  name: 'AppNavClaimBtn',
-
-  props: {
-    alert: { type: Object as PropType<Alert>, required: true }
-  },
-
-  setup(props) {
-    const { isWalletReady, appNetworkConfig } = useWeb3();
-    const { txListener } = useEthers();
-    const { fNum } = useNumbers();
-    const {
-      isLoadingPools,
-      isLoadingFarms,
-      onlyPoolsWithFarms,
-      harvestAllFarms,
-      refetchFarmsForUser
-    } = usePools();
-    const harvesting = ref(false);
-    const { upToLargeBreakpoint } = useBreakpoints();
-
-    const data = computed(() => {
-      const farms = onlyPoolsWithFarms.value.map(pool => pool.decoratedFarm);
-      const farmsWithRewardTokens = farms.filter(
-        farm => farm.rewardTokenSymbol !== null
-      );
-
-      const rewardTokens = map(
-        groupBy(farmsWithRewardTokens, farm => farm.rewardTokenSymbol),
-        group => ({
-          symbol: group[0].rewardTokenSymbol || '',
-          amount: sumBy(group, item => item.pendingRewardToken) || 0,
-          value: sumBy(group, item => item.pendingRewardTokenValue)
-        })
-      ).filter(token => token.value > 0);
-
-      const pendingRewardTokenValue = sumBy(rewardTokens, token => token.value);
-      const pendingBeetsValue = sumBy(farms, farm => farm.pendingBeetsValue);
-
-      const averageApr =
-        sumBy(farms, farm => farm.apr * (farm.stake || 0)) /
-        sumBy(farms, farm => farm.stake || 0);
-
-      return {
-        numFarms: farms.filter(farm => farm.stake > 0).length,
-        totalBalance: fNum(
-          sumBy(farms, farm => farm.stake || 0),
-          'usd'
-        ),
-        pendingBeets:
-          numeral(sumBy(farms, farm => farm.pendingBeets)).format(
-            '0,0.[0000]'
-          ) + ' BEETS',
-        pendingRewardValue: fNum(
-          pendingBeetsValue + pendingRewardTokenValue,
-          'usd'
-        ),
-        apr: fNum(averageApr, 'percent'),
-        dailyApr: fNum(averageApr / 365, 'percent'),
-        rewardTokens
-      };
-    });
-
-    const hasFarmRewards = computed(
-      () =>
-        onlyPoolsWithFarms.value.filter(pool => pool.decoratedFarm.stake > 0)
-          .length > 0
-    );
-
-    async function harvestAllRewards(): Promise<void> {
-      const farmIds = onlyPoolsWithFarms.value
-        .filter(pool => pool.decoratedFarm.stake > 0)
-        .map(pool => pool.decoratedFarm.id);
-
-      harvesting.value = true;
-      const tx = await harvestAllFarms(farmIds);
-
-      if (!tx) {
-        harvesting.value = false;
-        return;
-      }
-
-      txListener(tx, {
-        onTxConfirmed: async () => {
-          await refetchFarmsForUser();
-          harvesting.value = false;
-        },
-        onTxFailed: () => {
-          harvesting.value = false;
-        }
-      });
-    }
-
-    return {
-      data,
-      hasFarmRewards,
-      fNum,
-      numeral,
-      harvestAllRewards,
-      harvesting,
-      upToLargeBreakpoint,
-      isLoadingPools,
-      isLoadingFarms
-    };
-  }
-});
-</script>
-
-<style>
-.app-nav-alert {
-  @apply flex items-center justify-between py-4 px-6;
-}
-</style>

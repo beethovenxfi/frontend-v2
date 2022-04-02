@@ -16,6 +16,7 @@
         :priceImpact="priceImpact"
         @amountChange="handleAmountChange"
         class="mb-4"
+        :trade-loading="true"
       />
       <GasReimbursement
         class="mb-5"
@@ -203,7 +204,8 @@ export default defineComponent({
       latestTxHash,
       pools,
       fetchPools,
-      poolsLoading
+      poolsLoading,
+      loadingSwaps
     } = useSor({
       exactIn,
       tokenInAddressInput: tokenInAddress,
@@ -230,6 +232,10 @@ export default defineComponent({
     });
 
     const error = computed(() => {
+      if (loadingSwaps.value) {
+        return undefined;
+      }
+
       if (isHighPriceImpact.value) {
         return {
           header: t('highPriceImpact'),

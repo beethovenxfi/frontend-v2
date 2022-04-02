@@ -1,21 +1,21 @@
 import {
-  Ref,
-  onMounted,
-  ref,
   computed,
   ComputedRef,
+  onMounted,
   reactive,
+  ref,
+  Ref,
   toRefs
 } from 'vue';
 import { useStore } from 'vuex';
-import { useIntervalFn } from '@vueuse/core';
-import { BigNumber, parseFixed, formatFixed } from '@ethersproject/bignumber';
-import { Zero, WeiPerEther as ONE } from '@ethersproject/constants';
+import { useIntervalFn, useThrottleFn } from '@vueuse/core';
+import { BigNumber, formatFixed, parseFixed } from '@ethersproject/bignumber';
+import { WeiPerEther as ONE, Zero } from '@ethersproject/constants';
 import { BigNumber as OldBigNumber } from 'bignumber.js';
 import { Pool } from '@balancer-labs/sor/dist/types';
 import { useI18n } from 'vue-i18n';
 
-import { scale, bnum } from '@/lib/utils';
+import { bnum } from '@/lib/utils';
 import {
   getWrapOutput,
   unwrap,
@@ -23,9 +23,9 @@ import {
   WrapType
 } from '@/lib/utils/balancer/wrapper';
 import {
+  LiquiditySelection,
   SorManager,
-  SorReturn,
-  LiquiditySelection
+  SorReturn
 } from '@/lib/utils/balancer/helpers/sor/sorManager';
 import { swapIn, swapOut } from '@/lib/utils/balancer/swapper';
 import { configService } from '@/services/config/config.service';
@@ -44,6 +44,7 @@ import useTokens from '../useTokens';
 import { getStETHByWstETH } from '@/lib/utils/balancer/lido';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { SubgraphPoolBase, SwapTypes } from '@balancer-labs/sdk';
+import { balancerSubgraphService } from '@/services/balancer/subgraph/balancer-subgraph.service';
 
 type SorState = {
   validationErrors: {
@@ -132,6 +133,7 @@ export default function useSor({
   const latestTxHash = ref('');
   const poolsLoading = ref(true);
   const slippageError = ref(false);
+  const loadingSwaps = ref(false);
 
   // COMPOSABLES
   const store = useStore();
@@ -181,11 +183,6 @@ export default function useSor({
   }
 
   async function initSor(): Promise<void> {
-    const poolsUrlV1 = `${
-      configService.network.poolsUrlV1
-    }?timestamp=${Date.now()}`;
-    const subgraphUrl = configService.network.poolsUrlV2;
-
     // If V1 previously selected on another network then it uses this and returns no liquidity.
     if (!isV1Supported) {
       store.commit('app/setTradeLiquidity', LiquiditySelection.V2);
@@ -197,9 +194,7 @@ export default function useSor({
       BigNumber.from(GAS_PRICE),
       Number(MAX_POOLS),
       configService.network.chainId,
-      configService.network.addresses.weth,
-      poolsUrlV1,
-      subgraphUrl
+      configService.network.addresses.weth
     );
 
     sorManagerInitialized.value = true;
@@ -223,7 +218,18 @@ export default function useSor({
     }
   }
 
+  const throttledHandleAmountChange = useThrottleFn(
+    _handleAmountChange,
+    300,
+    true
+  );
+
   async function handleAmountChange(): Promise<void> {
+    loadingSwaps.value = true;
+    await throttledHandleAmountChange();
+  }
+
+  async function _handleAmountChange(): Promise<void> {
     const amount = exactIn.value
       ? tokenInAmountInput.value
       : tokenOutAmountInput.value;
@@ -235,6 +241,7 @@ export default function useSor({
       priceImpact.value = 0;
       sorReturn.value.hasSwaps = false;
       sorReturn.value.returnAmount = Zero;
+      loadingSwaps.value = false;
       return;
     }
 
@@ -244,6 +251,7 @@ export default function useSor({
     if (!tokenInAddress || !tokenOutAddress) {
       if (exactIn.value) tokenOutAmountInput.value = '';
       else tokenInAmountInput.value = '';
+      loadingSwaps.value = false;
       return;
     }
 
@@ -276,12 +284,14 @@ export default function useSor({
 
       sorReturn.value.hasSwaps = false;
       priceImpact.value = 0;
+      loadingSwaps.value = false;
       return;
     }
 
     if (!sorManager || !sorManager.hasPoolData()) {
       if (exactIn.value) tokenOutAmountInput.value = '';
       else tokenInAmountInput.value = '';
+      loadingSwaps.value = false;
       return;
     }
 
@@ -293,10 +303,6 @@ export default function useSor({
       );
 
       const tokenInAmountNormalised = new OldBigNumber(amount); // Normalized value
-      const tokenInAmountScaled = scale(
-        tokenInAmountNormalised,
-        tokenInDecimals
-      );
 
       console.log('[SOR Manager] swapExactIn');
 
@@ -306,10 +312,11 @@ export default function useSor({
         tokenInDecimals,
         tokenOutDecimals,
         SwapTypes.SwapExactIn,
-        tokenInAmountScaled,
+        tokenInAmountNormalised,
         tokenInDecimals,
         liquiditySelection.value
       );
+      console.log('[SOR Manager] swapExactIn return');
 
       sorReturn.value = swapReturn; // TO DO - is it needed?
       const tokenOutAmountNormalised = bnum(
@@ -346,10 +353,7 @@ export default function useSor({
     } else {
       // Notice that outputToken is tokenOut if swapType == 'swapExactIn' and tokenIn if swapType == 'swapExactOut'
       await setSwapCost(tokenInAddressInput.value, tokenInDecimals, sorManager);
-
       let tokenOutAmountNormalised = new OldBigNumber(amount);
-      const tokenOutAmount = scale(tokenOutAmountNormalised, tokenOutDecimals);
-
       console.log('[SOR Manager] swapExactOut');
 
       const swapReturn: SorReturn = await sorManager.getBestSwap(
@@ -358,7 +362,7 @@ export default function useSor({
         tokenInDecimals,
         tokenOutDecimals,
         SwapTypes.SwapExactOut,
-        tokenOutAmount,
+        tokenOutAmountNormalised,
         tokenOutDecimals,
         liquiditySelection.value
       );
@@ -397,10 +401,12 @@ export default function useSor({
       }
     }
 
-    pools.value = sorManager.selectedPools;
+    pools.value = balancerSubgraphService.pools.pools as SubgraphPoolBase[];
 
     state.validationErrors.highPriceImpact =
       priceImpact.value >= HIGH_PRICE_IMPACT_THRESHOLD;
+
+    loadingSwaps.value = false;
   }
 
   function txHandler(tx: TransactionResponse, action: TransactionAction): void {
@@ -677,6 +683,7 @@ export default function useSor({
     // For Tests
     setSwapCost,
     sorManagerInitialized,
-    sorManagerRef
+    sorManagerRef,
+    loadingSwaps
   };
 }

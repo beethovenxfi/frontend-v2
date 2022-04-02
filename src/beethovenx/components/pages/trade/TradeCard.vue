@@ -16,6 +16,7 @@
         :priceImpact="priceImpact"
         @amountChange="handleAmountChange"
         class="mb-4"
+        :trade-loading="loadingSwaps"
       />
       <BalAlert
         v-if="error && !(poolsLoading || isLoadingApprovals)"
@@ -37,7 +38,7 @@
       <BalBtn
         v-else
         :label="'Preview trade'"
-        :disabled="tradeDisabled"
+        :disabled="tradeDisabled || loadingSwaps"
         :loading-label="$t('confirming')"
         color="gradient"
         block
@@ -62,7 +63,6 @@
       @close="tradeSuccess = false"
     />
   </BalCard>
-  <!--  <TradeRatesCard v-if="sorManagerInitialized" :sor-manager="sorManagerRef" />-->
   <teleport to="#modal">
     <TradePreviewModal
       v-if="modalTradePreviewIsOpen"
@@ -82,10 +82,10 @@
 
 <script lang="ts">
 import { isRequired } from '@/lib/utils/validations';
-import { ref, defineComponent, computed, watch } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { isAddress, getAddress } from '@ethersproject/address';
+import { getAddress, isAddress } from '@ethersproject/address';
 
 import useTokenApproval from '@/composables/trade/useTokenApproval';
 import useValidation, {
@@ -105,16 +105,13 @@ import useWeb3 from '@/services/web3/useWeb3';
 import useBreakpoints from '@/composables/useBreakpoints';
 import useTokens from '@/composables/useTokens';
 import useDarkMode from '@/composables/useDarkMode';
-import { configService } from '@/services/config/config.service';
 
 import { getWrapAction, WrapType } from '@/lib/utils/balancer/wrapper';
 import { useTradeState } from '@/composables/trade/useTradeState';
 import useUserSettings from '@/composables/useUserSettings';
-import TradeRatesCard from '@/beethovenx/components/pages/trade/TradeRatesCard.vue';
 
 export default defineComponent({
   components: {
-    //TradeRatesCard,
     SuccessOverlay,
     TradePair,
     TradePreviewModal,
@@ -206,7 +203,8 @@ export default defineComponent({
       sorManagerInitialized,
       submissionError,
       slippageError,
-      resetState
+      resetState,
+      loadingSwaps
     } = useSor({
       exactIn,
       tokenInAddressInput: tokenInAddress,
@@ -233,6 +231,10 @@ export default defineComponent({
     });
 
     const error = computed(() => {
+      if (loadingSwaps.value) {
+        return undefined;
+      }
+
       if (isHighPriceImpact.value) {
         return {
           header: t('highPriceImpact'),
@@ -371,7 +373,8 @@ export default defineComponent({
       explorer: explorerLinks,
       sorManagerRef,
       sorManagerInitialized,
-      submissionErrorComputed
+      submissionErrorComputed,
+      loadingSwaps
     };
   }
 });
