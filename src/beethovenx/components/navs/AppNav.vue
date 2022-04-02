@@ -10,9 +10,8 @@
           <AppIcon />
         </router-link>
       </div>
-
-      <AppNavToggle v-if="!upToXLargeBreakpoint" />
-      <AppNavOtherItems v-if="!upToXLargeBreakpoint" />
+      <AppNavToggle v-if="!upToMediumBreakpoint" />
+      <AppNavOtherItems v-if="!upToMediumBreakpoint" />
 
       <div class="flex-1 flex justify-end">
         <AppNavActions />
@@ -47,7 +46,7 @@ export default defineComponent({
 
   setup() {
     // COMPOSABLES
-    const { bp, upToXLargeBreakpoint, upToLargeBreakpoint } = useBreakpoints();
+    const { bp, upToMediumBreakpoint } = useBreakpoints();
     const { trackGoal, Goals } = useFathom();
     const { connector } = useWeb3();
     const { currentAlert } = useAlerts();
@@ -81,13 +80,12 @@ export default defineComponent({
       appNav,
       // computed
       bp,
+      upToMediumBreakpoint,
       currentAlert,
-      upToXLargeBreakpoint,
       hideNetworkSelect,
       // methods
       trackGoal,
-      Goals,
-      upToLargeBreakpoint
+      Goals
     };
   }
 });
