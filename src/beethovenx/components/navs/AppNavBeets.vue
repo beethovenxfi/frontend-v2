@@ -4,7 +4,7 @@
       <BalBtn
         color="transparent"
         flat
-        class="text-base"
+        class="text-base mr-2"
         :size="upToLargeBreakpoint ? 'md' : 'sm'"
         :circle="upToLargeBreakpoint"
       >

@@ -1,29 +1,31 @@
 <template>
-  <BalPopover no-pad align="left">
-    <template v-slot:activator>
-      <div
-        class="flex items-center px-4 cursor-pointer relative"
-        style="top: -10px"
-      >
-        <div class="text-4xl">...</div>
+  <div>
+    <BalPopover align="left">
+      <template v-slot:activator>
+        <div
+          class="flex items-center px-4 cursor-pointer relative"
+          style="top: -10px"
+        >
+          <div class="text-4xl">...</div>
+        </div>
+      </template>
+      <div class="w-48">
+        <div
+          v-for="(link, index) in EXTERNAL_LINKS.Beethoven.NavOtherItems"
+          :key="index"
+          class="app-nav-other-item"
+        >
+          <BalLink :href="link.url" external noStyle>
+            {{ link.title }}
+            <BalIcon name="arrow-up-right" size="sm" class="text-gray-500" />
+            <div v-if="link.subTitle" class="text-xs text-gray-400">
+              {{ link.subTitle }}
+            </div>
+          </BalLink>
+        </div>
       </div>
-    </template>
-    <div class="w-48">
-      <div
-        v-for="(link, index) in EXTERNAL_LINKS.Beethoven.NavOtherItems"
-        :key="index"
-        class="app-nav-other-item"
-      >
-        <BalLink :href="link.url" external noStyle>
-          {{ link.title }}
-          <BalIcon name="arrow-up-right" size="sm" class="text-gray-500" />
-          <div v-if="link.subTitle" class="text-xs text-gray-400">
-            {{ link.subTitle }}
-          </div>
-        </BalLink>
-      </div>
-    </div>
-  </BalPopover>
+    </BalPopover>
+  </div>
 </template>
 
 <script lang="ts">

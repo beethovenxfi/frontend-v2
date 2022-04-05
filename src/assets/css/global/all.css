@@ -1,7 +1,7 @@
-@import "./fonts.css";
-@import "./typography.css";
-@import "./backgrounds.css";
-@import "./animations.css";
+@import './fonts.css';
+@import './typography.css';
+@import './backgrounds.css';
+@import './animations.css';
 
 html,
 body {
@@ -24,13 +24,13 @@ input {
   caret-color: theme('colors.pink.500');
 }
 
-
 #app {
-  background-image: linear-gradient(to bottom,
-    #08061F,
-    #1B1464,
-    #00395E,
-    #00544E,
+  background-image: linear-gradient(
+    to bottom,
+    #08061f,
+    #1b1464,
+    #00395e,
+    #00544e,
     #000000
   );
   /*@apply bg-white dark:bg-gray-900;*/
@@ -52,8 +52,8 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-input[type=number] {
-  -moz-appearance:textfield; /* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
 }
 
 *::-webkit-scrollbar {

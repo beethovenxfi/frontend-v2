@@ -1,6 +1,6 @@
 <template>
   <AppNavAlert v-if="currentAlert" :alert="currentAlert" />
-  <nav id="app-nav" ref="appNav" class="h-12 px-4 lg:px-6 sticky top-0">
+  <nav id="app-nav" ref="appNav" class="h-12 pr-4 xl:pr-6 sticky top-0">
     <div class="h-full flex items-center">
       <div class="flex items-center">
         <router-link
