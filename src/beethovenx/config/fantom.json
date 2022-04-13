@@ -9,6 +9,7 @@
   "rpc": "https://rpc.ftm.tools/",
   "ws": "wss://wsapi.fantom.network/",
   "loggingRpc": "",
+  "publicRpc": "https://rpc.ftm.tools",
   "explorer": "https://ftmscan.com",
   "explorerName": "Ftmscan",
   "subgraph": "https://graph-node.beets-ftm-node.com/subgraphs/name/beethovenx",
