@@ -18,7 +18,9 @@ export const balancer = new BalancerSDK({
       },
       linearFactories: {
         '0x1f73ae6ed391a2b1e84ff988a1bb5394b78a4a71': 'yearn',
-        '0xba306e3cf84751d8ef5e812c18caa6c567c783e8': 'boo'
+        '0xba306e3cf84751d8ef5e812c18caa6c567c783e8': 'boo',
+        '0x80434cf3661313d1a0632f567c1ba389ee2f7665': 'reaper',
+        '0xbfd55a29bf62b28e3bd16974a054c66f195fc5ef': 'tarot'
       }
     },
     urls: {
