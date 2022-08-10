@@ -11,7 +11,7 @@ export default class BeethovenxV2Service {
   private tokenPrices: TokenPrices = {};
 
   constructor(private readonly configService = _configService) {
-    this.url = 'https://backend-v2.beets-ftm-node.com/';
+    this.url = 'https://backend-optimism-v2.beets-ftm-node.com/';
   }
 
   private async get<T>(query: string, address?: string): Promise<T> {
