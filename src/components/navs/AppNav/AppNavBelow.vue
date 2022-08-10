@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useProtocolDataQuery from '@/beethovenx/composables/queries/useProtocolDataQuery';
+import useProtocolMetricsQuery from '@/beethovenx/composables/queries/useProtocolMetricsQuery';
 import { computed } from 'vue';
 import useNumbers from '@/composables/useNumbers';
 import BalLoadingBlock from '@/components/_global/BalLoadingBlock/BalLoadingBlock.vue';
@@ -7,16 +7,20 @@ import useUserPoolsData from '@/beethovenx/composables/useUserPoolsData';
 import useWeb3 from '@/services/web3/useWeb3';
 
 const { fNum } = useNumbers();
-const protocolDataQuery = useProtocolDataQuery();
+const protocolMetricsQuery = useProtocolMetricsQuery();
 const { userPoolsData, userPoolDataLoading } = useUserPoolsData();
 const { isWalletReady } = useWeb3();
-const procotolDataLoading = computed(() => protocolDataQuery.isLoading.value);
-const tvl = computed(() => protocolDataQuery.data?.value?.totalLiquidity || 0);
+const procotolDataLoading = computed(
+  () => protocolMetricsQuery.isLoading.value
+);
+const tvl = computed(
+  () => protocolMetricsQuery.data?.value?.totalLiquidity || 0
+);
 const swapFee24h = computed(
-  () => protocolDataQuery.data?.value?.swapFee24h || 0
+  () => protocolMetricsQuery.data?.value?.swapFee24h || 0
 );
 const swapVolume24h = computed(
-  () => protocolDataQuery.data?.value?.swapVolume24h || 0
+  () => protocolMetricsQuery.data?.value?.swapVolume24h || 0
 );
 </script>
 

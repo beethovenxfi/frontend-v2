@@ -131,6 +131,9 @@ const QUERY_KEYS = {
   ProtocolData: {
     All: ['protocolData', 'all']
   },
+  ProtocolMetrics: {
+    All: ['protocolMetrics', 'all']
+  },
   Dexes: {
     GetAmountsOut: ['Dexes', 'GetAmountsOut', 'all']
   },

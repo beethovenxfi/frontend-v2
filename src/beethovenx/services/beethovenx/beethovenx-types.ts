@@ -45,7 +45,7 @@ export interface UserPortfolio {
   history: UserPortfolioData[];
 }
 
-interface Scalars {
+export interface Scalars {
   ID: string;
   String: string;
   Boolean: boolean;
