@@ -24,20 +24,7 @@ export type Alert = {
   persistent?: boolean;
 };
 
-export const alertsState = ref<Record<string, Alert>>({
-  'v2-beta': {
-    id: 'v2-beta',
-    priority: AlertPriority.LOW,
-    label: 'Explore our new UI at https://opbeta.beets.fi/. Beta now live.',
-    type: AlertType.FEATURE,
-    actionLabel: 'Check it out',
-    action: () => {
-      window.location.href = 'https://opbeta.beets.fi';
-    },
-    actionOnClick: false,
-    persistent: false
-  }
-});
+export const alertsState = ref<Record<string, Alert>>({});
 
 /**
  * COMPUTED
