@@ -1,19 +1,11 @@
 <template>
   <div :class="`app-nav-toggle`">
-    <router-link
-      :to="{ name: 'trade' }"
-      :class="['toggle-link px-5', { [activeClasses]: isTradePage }]"
-      @click="trackGoal(Goals.ClickNavTrade)"
-    >
+    <a href="https://beets.fi/swap" :class="['toggle-link px-5']">
       Swap
-    </router-link>
-    <router-link
-      :to="{ name: 'pools' }"
-      :class="['toggle-link px-5', { [activeClasses]: isInvestPage }]"
-      @click="trackGoal(Goals.ClickNavInvest)"
-    >
+    </a>
+    <a href="https://beets.fi/pools" :class="['toggle-link px-5']">
       Invest{{ upToXLargeBreakpoint ? '' : '&nbsp;/&nbsp;Farm' }}
-    </router-link>
+    </a>
     <router-link
       :to="{ name: 'stake' }"
       :class="['toggle-link px-5', { [activeClasses]: isStakePage }]"
