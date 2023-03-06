@@ -216,7 +216,7 @@ const fundsRaisedValue = computed(
       </div>
       <div>
         <div class="font-medium">Funds Raised</div>
-        <div>{{ fNum(fundsRaised, 'usd') }}</div>
+        <div>{{ fNum(fundsRaisedValue, 'usd') }}</div>
       </div>
     </div>
   </div>
