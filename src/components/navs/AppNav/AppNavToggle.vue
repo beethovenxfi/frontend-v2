@@ -1,23 +1,11 @@
 <template>
   <div :class="`app-nav-toggle`">
-    <router-link
-      :to="{ name: 'trade' }"
-      :class="['toggle-link px-5', { [activeClasses]: isTradePage }]"
-      @click="trackGoal(Goals.ClickNavTrade)"
-    >
+    <a href="https://op.beets.fi/swap" :class="['toggle-link px-5']">
       Swap
-    </router-link>
-    <router-link
-      :to="{ name: 'pools' }"
-      :class="['toggle-link px-5', { [activeClasses]: isInvestPage }]"
-      @click="trackGoal(Goals.ClickNavInvest)"
-    >
-      Invest{{
-        !upToXLargeBreakpoint && featureFlags.supportsMasterChef
-          ? '&nbsp;/&nbsp;Farm'
-          : ''
-      }}
-    </router-link>
+    </a>
+    <a href="https://op.beets.fi/pools" :class="['toggle-link px-5']">
+      Invest{{ upToXLargeBreakpoint ? '' : '&nbsp;/&nbsp;Farm' }}
+    </a>
     <router-link
       v-if="featureFlags.supportsMasterChef"
       :to="{ name: 'stake' }"
