@@ -48,10 +48,6 @@ const hasUnstakedBpt = computed(
   () => userPoolList.value.filter(item => item.hasUnstakedBpt).length > 0
 );
 
-function goToPoolCreate() {
-  router.push({ name: 'pool-create' });
-}
-
 function toggleFilter(filterId: string) {
   if (activeFilters.value.includes(filterId)) {
     activeFilters.value = activeFilters.value.filter(id => id !== filterId);
@@ -86,11 +82,6 @@ watch(poolListQuery.error, () => {
           class="-ml-4"
         />
       </div>
-      <BalBtn
-        class="hidden lg:block"
-        label="Compose a pool"
-        @click="goToPoolCreate"
-      />
     </div>
     <InvestFeaturedPoolsCard
       :pools="featuredPools"
