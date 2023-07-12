@@ -4,15 +4,21 @@ import AppFooterNav from '@/components/navs/AppFooterNav/AppFooterNav.vue';
 import useBreakpoints from '@/composables/useBreakpoints';
 import AppHeaderBg from '@/beethovenx/components/backgrounds/AppHeaderBg.vue';
 import { EXTERNAL_LINKS } from '@/constants/links';
+import { useRoute } from 'vue-router';
 
 /**
  * COMPOSABLES
  */
 const { upToMediumBreakpoint } = useBreakpoints();
+const route = useRoute();
 </script>
 
 <template>
   <div>
+    <div class="banner" v-if="route.name === 'launch' || route.name === 'lge'">
+      The UI for the Liquidity Bootstrapping Pools will be removed on July 31st
+      2023.
+    </div>
     <AppNav />
     <AppHeaderBg />
     <div class="z-10 pb-16 relative px-4 lg:px-6">
@@ -46,5 +52,9 @@ const { upToMediumBreakpoint } = useBreakpoints();
 
 #intercom-activator {
   z-index: 2147483004;
+}
+
+.banner {
+  @apply text-black bg-red-600 p-4 px-8 font-bold text-center;
 }
 </style>
