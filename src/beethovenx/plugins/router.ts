@@ -54,7 +54,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/pool-create', name: 'pool-create', component: PoolCreate },
   // { path: '/my-portfolio', name: 'my-portfolio', component: Portfolio },
   { path: '/stake', name: 'stake', component: FreshBeets },
-  { path: '/lge-create', name: 'lge-create', component: LbpCreate },
+  // { path: '/lge-create', name: 'lge-create', component: LbpCreate },
   { path: '/launch', name: 'launch', component: LgeList },
   { path: '/lge/:id', name: 'lge', component: LbpDetail },
   { path: '/linear-pools', name: 'linear-pools', component: LinearPools },
