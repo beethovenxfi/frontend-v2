@@ -16,53 +16,64 @@ import Lock from '@/beethovenx/pages/Lock.vue';
 import LinearPools from '@/beethovenx/pages/LinearPools.vue';
 
 const routes: RouteRecordRaw[] = [
-  { path: '/', name: 'home', component: HomePage },
-  {
-    path: '/trade/:assetIn?/:assetOut?',
-    name: 'trade',
-    component: TradePage
-  },
-  {
-    path: '/swap/:assetIn?/:assetOut?',
-    redirect: to => {
-      return `/trade${to.path.split('/swap')[1]}`;
-    }
-  },
-  {
-    path: '/pool/:id',
-    name: 'pool',
-    component: PoolPage
-  },
-  {
-    path: '/pool/:id/invest',
-    name: 'invest',
-    component: PoolInvestPage,
-    meta: { layout: 'PoolTransferLayout' }
-  },
-  {
-    path: '/pool/:id/withdraw',
-    name: 'withdraw',
-    component: PoolWithdrawPage,
-    meta: { layout: 'PoolTransferLayout' }
-  },
-  {
-    path: '/liquidity-mining',
-    name: 'liquidity-mining',
-    component: LiquidityMiningPage
-  },
-  { path: '/pools', name: 'pools', component: InvestPage },
-  { path: '/pool-create', name: 'pool-create', component: PoolCreate },
-  // { path: '/my-portfolio', name: 'my-portfolio', component: Portfolio },
-  { path: '/stake', name: 'stake', component: FreshBeets },
-  // { path: '/lge-create', name: 'lge-create', component: LbpCreate },
-  { path: '/launch', name: 'launch', component: LgeList },
-  { path: '/lge/:id', name: 'lge', component: LbpDetail },
-  { path: '/linear-pools', name: 'linear-pools', component: LinearPools },
   {
     path: '/:pathMatch(.*)*',
-    name: 'not-found',
     redirect: '/'
+  },
+  {
+    path: '/',
+    name: 'home',
+    component: HomePage,
+    beforeEnter() {
+      window.location.href = 'https://beets.fi';
+    }
   }
+  // {
+  //   path: '/trade/:assetIn?/:assetOut?',
+  //   name: 'trade',
+  //   component: TradePage
+  // },
+  // {
+  //   path: '/swap/:assetIn?/:assetOut?',
+  //   redirect: to => {
+  //     return `/trade${to.path.split('/swap')[1]}`;
+  //   }
+  // },
+  // {
+  //   path: '/pool/:id',
+  //   name: 'pool',
+  //   component: PoolPage
+  // },
+  // {
+  //   path: '/pool/:id/invest',
+  //   name: 'invest',
+  //   component: PoolInvestPage,
+  //   meta: { layout: 'PoolTransferLayout' }
+  // },
+  // {
+  //   path: '/pool/:id/withdraw',
+  //   name: 'withdraw',
+  //   component: PoolWithdrawPage,
+  //   meta: { layout: 'PoolTransferLayout' }
+  // },
+  // {
+  //   path: '/liquidity-mining',
+  //   name: 'liquidity-mining',
+  //   component: LiquidityMiningPage
+  // },
+  // { path: '/pools', name: 'pools', component: InvestPage },
+  // { path: '/pool-create', name: 'pool-create', component: PoolCreate },
+  // // { path: '/my-portfolio', name: 'my-portfolio', component: Portfolio },
+  // { path: '/stake', name: 'stake', component: FreshBeets },
+  // // { path: '/lge-create', name: 'lge-create', component: LbpCreate },
+  // { path: '/launch', name: 'launch', component: LgeList },
+  // { path: '/lge/:id', name: 'lge', component: LbpDetail },
+  // { path: '/linear-pools', name: 'linear-pools', component: LinearPools },
+  // {
+  //   path: '/:pathMatch(.*)*',
+  //   name: 'not-found',
+  //   redirect: '/'
+  // }
 ];
 
 /**
